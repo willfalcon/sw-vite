@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { client } from '../../client';
 
-const BATTLE_ATTEMPT_QUERY = gql`
+export const BATTLE_ATTEMPT_QUERY = gql`
   query BattleAttemptQuery($id: ID!) {
     battleAttempt(where: { id: $id }) {
       id
@@ -63,7 +63,7 @@ const BATTLE_ATTEMPT_QUERY = gql`
   }
 `;
 
-export async function loader(props) {
+export async function attemptLoader(props) {
   const { params } = props;
 
   const { data } = await client.query({

@@ -3,34 +3,45 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/client';
 
-import Root from './routes/root';
-import { loader as rootLoader } from './routes/root/loader';
-
 import './index.css';
+
 import ErrorPage from './error-page';
-import Lobby from './routes/lobby';
 import { client } from './client';
 import RequireAuth from './components/RequireAuth';
+
+import Root, { rootLoader } from './routes/root';
+import Lobby from './routes/lobby';
 import Login, { loginLoader, loginAction } from './routes/login';
-import Characters from './routes/characters';
-import { loader as charactersLoader } from './routes/characters/loader';
-import Character from './routes/character';
-import { loader as characterLoader } from './routes/character/loader';
+import Characters, { charactersLoader } from './routes/characters';
+
+import Character, { characterLoader } from './routes/character';
 import LightSideBattles, { loader as lightSideBattlesRootLoader } from './routes/battles/lightSideBattles';
 import Battle from './routes/battle/battle';
 import { loader as battleLoader } from './routes/battle/loader';
-import DarkSideBattles from './routes/battles/darkSideBattles';
-import Header from './components/Header';
+
 import Tier, { loader as tierLoader } from './routes/battles/Tier';
-import Attempt from './routes/attempt/attempt';
-import { loader as attemptLoader } from './routes/attempt/loader';
-import { action as attemptAction } from './routes/attempt/action';
+import Attempt, { attemptLoader, attemptAction } from './routes/attempt';
 import AuthProvider from './components/auth/AuthProvider';
+import Landing from './routes/landing';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Root />,
+    element: <Landing />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
+    loader: loginLoader,
+    // action: loginAction,
+  },
+  {
+    path: '/game',
+    element: (
+      <RequireAuth>
+        <Root />
+      </RequireAuth>
+    ),
     errorElement: <ErrorPage />,
     loader: rootLoader,
     children: [
@@ -39,72 +50,39 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: (
-              <RequireAuth>
-                <Lobby />
-              </RequireAuth>
-            ),
-          },
-          {
-            path: '/login',
-            element: <Login />,
-            loader: loginLoader,
-            action: loginAction,
-          },
-          {
-            path: '/characters',
-            element: (
-              <RequireAuth>
-                <Characters />
-              </RequireAuth>
-            ),
-            loader: charactersLoader,
-          },
-          {
-            path: '/character/:slug',
-            element: (
-              <RequireAuth>
-                <Character />
-              </RequireAuth>
-            ),
-            loader: characterLoader,
-          },
-          {
-            path: '/battles',
-            element: (
-              <RequireAuth>
-                <Outlet />
-              </RequireAuth>
-            ),
+            element: <Lobby />,
           },
 
           {
-            path: '/battles/light-side',
-            element: (
-              <RequireAuth>
-                <LightSideBattles />
-              </RequireAuth>
-            ),
+            path: '/game/characters',
+            element: <Characters />,
+            loader: charactersLoader,
+          },
+          {
+            path: '/game/character/:slug',
+            element: <Character />,
+            loader: characterLoader,
+          },
+          {
+            path: '/game/battles',
+            element: <Outlet />,
+          },
+
+          {
+            path: '/game/battles/light-side',
+            element: <LightSideBattles />,
             loader: lightSideBattlesRootLoader,
             children: [
               {
-                path: '/battles/light-side/:tier',
-                element: (
-                  <RequireAuth>
-                    <Tier />
-                  </RequireAuth>
-                ),
+                path: '/game/battles/light-side/:tier',
+                element: <Tier />,
                 loader: tierLoader,
               },
             ],
           },
           {
-            path: '/battles/light-side/:tier/:battle',
-            element: (
-              <RequireAuth>
-                <Battle />
-              </RequireAuth>
-            ),
+            path: '/game/battles/light-side/:tier/:battle',
+            element: <Battle />,
             loader: battleLoader,
           },
         ],
@@ -112,23 +90,23 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/attempt/:id',
-    element: (
-      <RequireAuth>
-        <Attempt />
-      </RequireAuth>
-    ),
+    path: '/game/attempt/:id',
+    element: <Attempt />,
     loader: attemptLoader,
     action: attemptAction,
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <ApolloProvider client={client}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </ApolloProvider>
-  </React.StrictMode>
-);
+const root = document.getElementById('root');
+
+if (root) {
+  ReactDOM.createRoot(root).render(
+    <React.StrictMode>
+      <ApolloProvider client={client}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </ApolloProvider>
+    </React.StrictMode>
+  );
+}

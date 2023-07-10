@@ -1,4 +1,4 @@
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useLocation } from 'react-router-dom';
 
 import GridCharacter from '../../components/characterGrid/GridCharacter';
 import { useState } from 'react';
@@ -49,9 +49,10 @@ const REMOVE_FROM_SQUAD_MUTATION = gql`
 export default function Battle() {
   const { opponents, tier, battle, characters, battleSquad, user } = useLoaderData();
   const [squad, setSquad] = useState(battleSquad);
-  const [addToSquad, addStatus] = useMutation(ADD_TO_SQUAD_MUTATION);
-  const [removeFromSquad, removeStatus] = useMutation(REMOVE_FROM_SQUAD_MUTATION);
+  const [addToSquad] = useMutation(ADD_TO_SQUAD_MUTATION);
+  const [removeFromSquad] = useMutation(REMOVE_FROM_SQUAD_MUTATION);
 
+  const location = useLocation();
   return (
     <div>
       Battle {tier} - {battle.label}
@@ -105,7 +106,7 @@ export default function Battle() {
           </button>
         ))}
       </div>
-      <StartBattle user={user} battle={battle.id} />
+      <StartBattle user={user} battle={battle.id} location={location} />
     </div>
   );
 }

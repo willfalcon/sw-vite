@@ -3,12 +3,13 @@ import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 export default function GridCharacter({ character, level, stars, slot = false }) {
   return (
     <div className="w-32 mt-5">
-      <p className="truncate text-sm text-center h-5">{slot ? '' : character?.name}</p>
+      <p className="truncate text-sm text-center h-5">{slot ? '' : character?.slug}</p>
       <div className="relative">
         <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border">
           {slot ? (
             <div className="w-full h-full bg-slate-300 flex items-center justify-center">Empty</div>
           ) : (
+            // <div className="bg-natural-500" />
             <img className="object-cover w-full h-full object-top" src={character?.image.url} alt={character?.name} />
           )}
         </div>

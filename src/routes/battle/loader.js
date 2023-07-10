@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { client } from '../../client';
-import { CURRENT_USER_QUERY, getUser } from '../../components/auth/user';
-import { CHARACTERS_QUERY } from '../characters/loader';
+import { CURRENT_USER_QUERY } from '../../components/auth/user';
+import { CHARACTERS_QUERY } from '../characters/charactersLoader';
 
 const BATTLES_QUERY = gql`
   query BattlesQuery($category: String!, $tier: Int!, $label: String!) {

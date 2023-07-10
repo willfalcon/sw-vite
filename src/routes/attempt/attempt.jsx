@@ -1,18 +1,25 @@
-import { Form, useActionData, useFetcher, useLoaderData } from 'react-router-dom';
+import { useFetcher, useLoaderData } from 'react-router-dom';
 
 import { useEffect, useState } from 'react';
 
 import { AttemptContext } from './components/attemptContext';
 import Opponent from './components/Opponent';
 import Friendly from './components/Friendly';
-import { Button } from '../../components/ui/Button';
+import { Button } from '@/components/ui/Button';
+import AttemptMenuBar from './components/AttemptMenuBar';
 
 export default function Attempt() {
   const loaderData = useLoaderData();
-  const { squad, opponents, firstUp, id } = loaderData;
+  const { firstUp, id } = loaderData;
   const attackFetcher = useFetcher();
-  console.log(attackFetcher.data);
+
+  const [squad, setSquad] = useState(loaderData.squad);
+  const [opponents, setOpponents] = useState(loaderData.opponents);
+
   const [target, setTarget] = useState(opponents[0].id);
+  const [damageToast, setDamageToast] = useState(null);
+
+  const [swapTurn, setSwapTurn] = useState(false);
 
   useEffect(() => {
     const playerTurn = attackFetcher.data?.playerTurn;
@@ -21,9 +28,26 @@ export default function Attempt() {
       console.log(
         `Attack made! ${playerTurn.attacker.character.character.name} dealt ${playerTurn.damage} damage to ${playerTurn.target.character.character.name}`
       );
-      console.log(attackFetcher.data);
+      setDamageToast(playerTurn);
+      setOpponents(loaderData.opponents);
+      setTimeout(() => {
+        setDamageToast(null);
+
+        if (opponentTurn) {
+          setSwapTurn(true);
+          setTimeout(() => {
+            setDamageToast(opponentTurn);
+            setSquad(loaderData.squad);
+            setTimeout(() => {
+              setSwapTurn(false);
+              setDamageToast(false);
+            }, 1000);
+          }, 200);
+        }
+      }, 1000);
     }
   }, [attackFetcher.data]);
+
   useEffect(() => {
     const targetedOpponent = opponents.find(opp => opp.id === target);
     if (targetedOpponent.defeated) {
@@ -39,8 +63,9 @@ export default function Attempt() {
   const [selectedAbility, setSelectedAbility] = useState(activeAbilities[0].id);
 
   return (
-    <AttemptContext.Provider value={{ target, setTarget, turn: firstUp }}>
-      <div className="container mx-auto grid grid-cols-2">
+    <AttemptContext.Provider value={{ target, setTarget, turn: firstUp, damageToast, swapTurn, attackData: attackFetcher.data }}>
+      <AttemptMenuBar battleId={id} />
+      <div className="container mx-auto grid grid-cols-2 pt-14">
         <div>
           <div className="flex items-center justify-between">
             <div className="space-y-1">

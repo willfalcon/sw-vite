@@ -17,7 +17,10 @@ export const CHARACTERS_QUERY = gql`
     }
   }
 `;
-export async function loader() {
+
+
+
+export default async function charactersLoader() {
   const data = await client.query({
     query: CHARACTERS_QUERY,
   });

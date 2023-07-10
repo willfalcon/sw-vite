@@ -10,6 +10,7 @@ const CHARACTER_QUERY = gql`
         url
       }
       name
+      slug
       factions {
         name
         id
@@ -25,7 +26,7 @@ const CHARACTER_QUERY = gql`
   }
 `;
 
-export async function loader({ params }) {
+export async function characterLoader({ params }) {
   const data = await client.query({
     query: CHARACTER_QUERY,
     variables: {
@@ -33,5 +34,4 @@ export async function loader({ params }) {
     },
   });
   return data;
-  console.log(data);
 }

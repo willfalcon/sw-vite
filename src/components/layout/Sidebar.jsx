@@ -1,8 +1,8 @@
 import { RiDashboardFill, RiUserFill } from 'react-icons/ri';
 import { FaPeopleArrows } from 'react-icons/fa';
 import { gql } from '@apollo/client';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useUser } from '../auth/user';
+import { Form, Link, NavLink, useNavigate } from 'react-router-dom';
+import { CURRENT_USER_QUERY, useUser } from '../auth/user';
 import { client } from '../../client';
 
 const NavItem = ({ children, href, icon }) => {
@@ -29,16 +29,16 @@ export default function Sidebar() {
   const user = useUser();
   const navigate = useNavigate();
   return (
-    <aside className="basis-48 flex h-screen flex-col justify-between border-e bg-white">
+    <aside className="basis-48 w-56 flex h-screen flex-col justify-between border-e bg-white pt-8 fixed">
       <div className="px-4 py-6">
-        <Link to="/" className="grid h-10 w-32 place-content-center rounded-lg bg-gray-100 text-xs text-gray-600">
+        <Link to="/game" className="grid h-10 w-32 place-content-center rounded-lg bg-gray-100 text-xs text-gray-600">
           GOC
         </Link>
         <nav aria-label="Main Nav" className="mt-6 flex flex-col space-y-1">
-          <NavItem href="/" icon={RiDashboardFill}>
+          <NavItem href="/game" icon={RiDashboardFill}>
             Lobby
           </NavItem>
-          <NavItem href="/characters" icon={RiUserFill}>
+          <NavItem href="/game/characters" icon={RiUserFill}>
             Characters
           </NavItem>
           <details className="group [&_summary::-webkit-details-marker]:hidden">
@@ -58,8 +58,8 @@ export default function Sidebar() {
               </span>
             </summary>
             <nav aria-label="Battles Nav" className="mt-2 flex flex-col px-4">
-              <NavItem href="/battles/light-side">Light Side Battles</NavItem>
-              <NavItem href="/battles/dark-side">Dark Side Battles</NavItem>
+              <NavItem href="/game/battles/light-side">Light Side Battles</NavItem>
+              <NavItem href="/game/battles/dark-side">Dark Side Battles</NavItem>
             </nav>
           </details>
         </nav>
@@ -74,7 +74,7 @@ export default function Sidebar() {
                 <strong className="block font-medium">{user.name}</strong>
                 <button
                   onClick={async () => {
-                    await client.mutate({ mutation: LOGOUT_MUTATION });
+                    await client.mutate({ mutation: LOGOUT_MUTATION, refetchQueries: [CURRENT_USER_QUERY] });
                     navigate('/login');
                   }}
                 >

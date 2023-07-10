@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import { client } from '../../client';
+import { BATTLE_ATTEMPT_QUERY } from './attemptLoader';
 
 const ATTACK_MUTATION = gql`
   mutation AttackMutation($attempt: ID!, $ability: ID!, $target: ID!) {
@@ -32,6 +33,9 @@ const ATTACK_MUTATION = gql`
         target {
           ... on AttemptCharacter {
             id
+            health
+            defeated
+            turnMeter
             character {
               id
               character {
@@ -42,6 +46,9 @@ const ATTACK_MUTATION = gql`
           }
           ... on AttemptOpponent {
             id
+            health
+            defeated
+            turnMeter
             character {
               id
               character {
@@ -60,21 +67,33 @@ const ATTACK_MUTATION = gql`
             id
             character {
               id
+              character {
+                name
+              }
             }
           }
           ... on AttemptOpponent {
             id
             character {
               id
+              character {
+                name
+              }
             }
           }
         }
         target {
           ... on AttemptCharacter {
             id
+            health
+            defeated
+            turnMeter
           }
           ... on AttemptOpponent {
             id
+            health
+            defeated
+            turnMeter
           }
         }
       }
@@ -82,15 +101,7 @@ const ATTACK_MUTATION = gql`
   }
 `;
 
-const GET_WRECKED_MUTATION = gql`
-  mutation GetWreckedMutation($attempt: ID!) {
-    getWrecked(attempt: $attempt) {
-      id
-    }
-  }
-`;
-
-export async function action({ request }) {
+export async function attemptAction({ request }) {
   const formData = await request.formData();
 
   const attempt = formData.get('attempt');
@@ -104,6 +115,7 @@ export async function action({ request }) {
       ability,
       target,
     },
+    refetchQueries: [BATTLE_ATTEMPT_QUERY],
   });
 
   return result.data.attack;

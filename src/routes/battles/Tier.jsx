@@ -23,8 +23,6 @@ export async function loader({ params }) {
 export default function Tier() {
   const { battles, tier } = useLoaderData();
 
-  console.log(battles);
-
   return (
     <div>
       <div className="relative mt-4 after:absolute after:inset-x-0 after:top-1/2 after:block after:h-0.5 after:-translate-y-1/2 after:rounded-lg after:bg-gray-400">
@@ -32,7 +30,7 @@ export default function Tier() {
           {battles.map(battle => (
             <li className="flex items-center justify-center gap-2 p-2" key={battle.id}>
               <Link
-                to={`/battles/light-side/${tier}/${battle.label}`}
+                to={`/game/battles/light-side/${tier}/${battle.label}`}
                 className="h-8 w-8 rounded-full bg-gray-200 hover:bg-blue-600 hover:text-white text-center font-bold flex justify-center items-center"
               >
                 {battle.label}

@@ -10,8 +10,8 @@ const CREATE_BATTLE_ATTEMPT_MUTATION = gql`
   }
 `;
 
-const StartBattle = ({ user, battle }) => {
-  const [createBattleAttempt, status] = useMutation(CREATE_BATTLE_ATTEMPT_MUTATION, {
+const StartBattle = ({ user, battle, location }) => {
+  const [createBattleAttempt] = useMutation(CREATE_BATTLE_ATTEMPT_MUTATION, {
     variables: {
       user,
       battle,
@@ -25,7 +25,7 @@ const StartBattle = ({ user, battle }) => {
       onClick={async () => {
         const { data } = await createBattleAttempt();
 
-        navigate(`/attempt/${data.createBattleAttemptForBattle.id}`);
+        navigate(`/game/attempt/${data.createBattleAttemptForBattle.id}`, { state: { from: location } });
       }}
     >
       Battle
